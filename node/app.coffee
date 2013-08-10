@@ -5,7 +5,8 @@ dust		= require 'dustjs-linkedin'
 app = express()
 
 app.get '/', (req, res) ->
-	res.send 'Bubbl.io Testing'
+	res.send 'Bubbl.io Testing test!'
 
 app.listen 3000
-console.log 'EXPRESS SERVER STARTED'.green
+console.log 'Express listening on 3000'
+console.log 'Good luck!'.green

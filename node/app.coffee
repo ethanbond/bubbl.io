@@ -7,6 +7,6 @@ app = express()
 app.get '/', (req, res) ->
 	res.send 'Bubbl.io Testing test test again!!'
 
-app.listen 3000
-console.log 'Express listening on 3000'
+app.listen 80
+console.log 'Express listening on 80'
 console.log 'Good luck!'.green

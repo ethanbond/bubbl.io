@@ -1,4 +1,25 @@
 {>"templates/layout"/}
+
 {<content}
-blah
+
+
+<section class="hero">
+	<h1>Fast, unlimited collaboration.</h1>
+	<p>Drag, drop, share. Each link lasts for 7 days of inactivity, but you can create as many as you want.</p>
+</section>
+
+<section class="filebox">
+	<ul class="files">
+		<h4 class="underconstruction">
+			We're not ready for showtime yet, sorry.
+		</h4>
+
+		{#files}
+			{>"partials/icon"/}
+		{/files}
+		
+	</ul>
+</section>
+
+
 {/content}

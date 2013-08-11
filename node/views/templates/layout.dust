@@ -6,13 +6,29 @@
 		<meta name="author" content="{metadata.author}" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<script src="/javascripts/dust.js"></script>
+		<script type="text/javascript" src="//use.typekit.net/rvt8fvi.js"></script>
+		<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 		<link rel="stylesheet" href="/stylesheets/app.css">
 		{+stylesheets/}
 	</head>
 	<body>
-		head
+		<header>
+			<i class="ibubblio"></i>
+		</header>
 		{+content/}
-		foot
+		<section class="footer">
+			<footer>
+				<ul>
+					<li><a href="#">Home</a></li>
+					<li><a href="#">FAQ</a></li>
+					<li><a href="#">Terms</a></li>
+					<li><a href="#">Contact</a></li>
+				</ul>
+				<div class="copyright">
+					<h6>Made in  <i class="idroplet"></i> New York</h6>
+				</div>
+			</footer>			
+		</section>
 	</body>
 	{+scripts/}
 </html>

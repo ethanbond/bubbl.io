@@ -1,0 +1,29 @@
+@mixin nav($horizontal: false, $align: left, $spacing: 0.5rem, $link-color: white, $link-hover: #cbcbc1, $hover-duration: 250) {
+	@if $horizontal {
+		li {
+			@if $align == 'center' {
+				text-align: center;
+			}
+			display: inline-block;
+			padding: 1rem $spacing/2;
+			margin: 0 $spacing/2;
+		}
+	}@else{
+		padding: $spacing/2 1rem;
+		margin: $spacing/2 0;
+	}
+	@if $align == 'center' {
+		text-align: center;
+	}
+
+	a {
+		color: $link-color;
+		transition: color #{$hover-duration}+'ms';
+		&:hover {
+			color :$link-hover;
+		}
+	}
+
+
+	list-style: none;
+}

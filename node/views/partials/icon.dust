@@ -1,0 +1,14 @@
+<li class="file">
+	<div class="icon-container">
+		<h1>
+			{abbreviation}
+		</h1>
+		<h2>
+			{filename}
+		</h2>
+	</div>
+	<div class="icon-controls">
+		<i class="iclose"></i>
+		<i class="iheart-2"></i>
+	</div>	
+</li>

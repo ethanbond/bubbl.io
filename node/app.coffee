@@ -35,6 +35,6 @@ app.get '/', routes.index
 
 
 
-app.listen 3000
-console.log 'Express listening on 3000'
+app.listen 80
+console.log 'Express listening on 80'
 console.log 'Good luck!'.green

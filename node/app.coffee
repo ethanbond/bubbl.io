@@ -50,5 +50,5 @@ app.get '/', routes.index
 
 
 app.listen 80
-console.log 'Express listening on 80'
-console.log 'Good luck!'.green
+coconsole.log 'SUCCESS: Express listening on 80'.green
+console.log 'INFO:    Good luck!'.cyan

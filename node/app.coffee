@@ -50,5 +50,5 @@ app.get '/', routes.index
 
 
 app.listen 80
-coconsole.log 'SUCCESS: Express listening on 80'.green
+console.log 'SUCCESS: Express listening on 80'.green
 console.log 'INFO:    Good luck!'.cyan

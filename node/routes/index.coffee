@@ -1,6 +1,9 @@
+mongo		= require 'mongodb'
+mongoose	= require 'mongoose'
+Grid		= require 'gridfs-stream'
+
 module.exports =
 	index: (req, res) ->
-		res.render "index", 
-			metadata:
-				title: "bubbl.io"
-				description: "A fast, free file collaboration website. No registration necessary. Live editing, 25MB file limit, unlimited storage, and more. Coming soon."
+		res.render "index"
+	upload: (req, res) ->
+		res.send JSON.stringify file for file, data in req.files

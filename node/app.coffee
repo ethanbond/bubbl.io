@@ -1,53 +1,67 @@
+# Includes
+## Server
 express 	= require 'express'
-colors		= require 'colors'
-dust		= require 'dustjs-linkedin'
-cons 		= require 'consolidate'
-db			= require 'mongodb'
-dbClient	= db.MongoClient
-mongoose	= require 'mongoose'
-sass		= require 'node-sass'
-
 app 		= express()
 
-routes 		= require './routes'
-models		= require './models'
+## Utilities
+colors		= require 'colors'
 
-dbClient.connect "mongodb://localhost:27017/test", (err, db) ->
-	if err
-		console.log "FAILURE: Could not connect to mongodb".red
-		console.log err
-	else
-		console.log "SUCCESS: Connected to mongodb".green
-		db.createCollection 'test', {w:1}, (err, collection) ->
-			if err
-				console.log "FAILURE: Could not create collection".red
-				console.log err
-			else
-				console.log "SUCCESS: Collection created".green
+## Locations
+Routes 		= require './routes'
+Models		= require './models'
 
+
+## Front-end
+dust		= require 'dustjs-linkedin'
+cons 		= require 'consolidate'
+sass		= require 'node-sass'
+
+## Database
+mongo		= require 'mongodb'
+mongoose	= require 'mongoose'
+Grid		= require 'gridfs-stream'
+
+mongoose.connect 'mongodb://127.0.0.1/test'
+db 			= mongoose.connection
+
+
+## Input/Output
+bodyParser 	= require('connect-multiparty').bodyParser;
+
+
+# Configuration
+## Locations
+app.set 'views', __dirname + '/views'
+app.use express.static(__dirname + '/public')
+
+## Front-end
 app.set 'view engine', 'dust'
 app.set 'template engine', 'dust'
 app.engine 'dust', cons.dust
-
-app.set 'views', __dirname + '/views'
-
-app.use sass.middleware {
+app.use sass.middleware {			# Compile sass from /source to /public
 	src: __dirname + '/source',
 	dest: __dirname + '/public',
 	debug: true,
 	outputStyle: 'nested'	
 }
 
-app.use express.bodyParser()
-app.use express.static(__dirname + '/public')
+## Utilities
+app.use bodyParser()				# This is multiparty's bodyParser
 app.use app.router
-
-app.get '/', routes.index
-
+app.use express.errorHandler()
 
 
+app.get '/', 				Routes.index
+app.post '/', 				Routes.upload
 
 
+
+
+
+
+########################################################
+##################### Start server #####################
+########################################################
 
 app.listen 3000
 console.log 'SUCCESS: Express listening on 3000'.green

@@ -9,15 +9,23 @@
 </section>
 
 <section class="filebox">
-	<ul class="files">
-		<h4 class="underconstruction">
-			We're not ready for showtime yet, sorry.
-		</h4>
+	<form method="post" enctype="multipart/form-data">
+		<input type="file" name="file" />
+		<input type="file" name="file2" />
+		<input type="file" name="file3" />
+		<input type="submit" value="Upload">
+	</form>
+	
+	{altDebug}
+	
+	{#debug}
+		blah--- <br>
+	{/debug}
 
+	<ul class="files">
 		{#files}
-			{>"partials/icon"/}
+			<!-- {>"partials/icon"/} -->
 		{/files}
-		
 	</ul>
 </section>
 

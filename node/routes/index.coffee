@@ -2,29 +2,43 @@ Db			= require '../db'
 Grid		= require 'gridfs-stream'
 mongoose	= require 'mongoose'
 Grid.mongo	= mongoose.mongo
+Models 		= require '../models'
+Bubbl 		= Models.Bubbl
+File 		= Models.File
+Link 		= Models.Link
 
 fs 			= require 'fs'
 
 module.exports =
-	index: (req, res) ->
+	index:		(req, res) ->
 		res.render "index"
 	addToBubbl: (req, res) ->
 		res.render "index"
-	upload: (req, res) ->
-		# make new bubbl instance
-		for key, value of req.files
-			# make new file instance
+	upload: 	(req, res) ->
+		bubbl = new Bubbl.model
+		bubbl.genLink()
+		console.log 'SUCCESS: New bubbl generated'.green
+		bubbl.save (err, bubbl) ->
+			if err
+				console.log 'FAILURE: Could not save new bubbl to MongoDB'.red
+				return
+			console.log 'SUCCESS: New bubbl saved to MongoDB'.green
+			for key, value of req.files
 
+				# res.send value.name
+				console.log value
 
+				file = new File.model
+				file.save (err, file) ->
+					console.log 'SUCCESS: New file saved to MongoDB'.green
+					gfs = Grid Db.connection
+					writestream = gfs.createWriteStream (_id: file._id)						
+					writestream.on 'error', (err) ->
+						console.log 'FAILURE: Writestream failure'.red 
+						throw err
+					value._writeStream.pipe(writestream)
+					writestream.on 'close', (file) ->
+						console.log 'done'
+						console.log file.filename
 
-			gfs = Grid Db.connection
-			console.log value
-			writestream = gfs.createWriteStream({_id: 1402})
-			writestream.on 'error', (err) ->
-				console.log 'FAILURE: Writestream failure'.red 
-				throw err
-			console.log 'SUCCESS: GridFS writestream opened'.green
-			console.log 'INFO: File stream: '.cyan+value._writeStream.path.cyan
-			fs.createReadStream(value._writeStream.path).pipe(writestream)
-			console.log 'SUCCESS: GridFS steam connected to form stream'.green
-			# add file instance to new bubbl
+					# bubbl.addFile file

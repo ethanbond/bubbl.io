@@ -1,30 +1,37 @@
 mongoose 	= require 'mongoose'
-chance		= require 'chance'
+Chance		= require 'chance'
+chance 		= new Chance
 
 Bubbl 		= require './Bubbl'
 
 
 one_week 	= (7 * 24 * 60 * 60)
-randomUrl	= () ->
-	return 'blah'
+randomUrl	= () -> return chance.string {length: 7, pool: 'ahijkoqruwx'}
 
 
 
-Link = new mongoose.Schema {
+linkSchema = new mongoose.Schema {
 	url:
 		type: String
 		default: randomUrl()
 	expiration:
 		type: Date
-		default: new Date(Date.getTime + one_week)
-	bubbl: Bubbl
+		default: Date.now() + one_week
+	bubbl: String
 }
 
 
-Link.methods =
-	assign: assign = (req, res) ->
-		bubbl = req.params.bubbl
-	checkExpiration: checkExpiration = (req, res) ->
+linkSchema.methods =
+	test: ->
+		console.log "URL:        ", this.url
+		console.log "EXPIRATION: ", this.expiration
+		console.log "BUBBL:      ", this.bubbl
+	getString: ->
+		return this.url
+	assign: (id, callback) ->
+		this.bubbl = id
+		callback false
+	checkExpiration: (req, res) ->
 		if Date.now.getTime > this.expiration.getTime
 			bubbl.checkExpiration
 			# delete this Link
@@ -34,4 +41,6 @@ Link.methods =
 			bubbl.fetch
 
 
-module.exports = mongoose.model "Link", Link
+module.exports =
+	model: mongoose.model "Link", linkSchema
+	schema: linkSchema

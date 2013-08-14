@@ -18,4 +18,7 @@ fileSchema = new mongoose.Schema {
 
 
 
-module.exports = mongoose.model 'File', fileSchema
+module.exports =
+	model: mongoose.model 'File', fileSchema
+	schema: fileSchema
+

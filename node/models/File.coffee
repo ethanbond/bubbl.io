@@ -1,13 +1,21 @@
 mongoose 	= require 'mongoose'
-Schema 		= mongoose.Schema
 
-fileSchema = Schema {
-	id: Number
+fileSchema = new mongoose.Schema {
 	filename: String
 	extension: String
 	size: Number
-	date_added: Number
-	date_edited: Number
+	dates:
+		added:
+			type: Date
+			default: Date.now
+		edited:
+			type: Date
+			default: Date.now
+		viewed:
+			type: Date
+			default: Date.now
 }
 
-module.exports = fileSchema
+
+
+module.exports = mongoose.model 'File', fileSchema

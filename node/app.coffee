@@ -8,22 +8,14 @@ colors		= require 'colors'
 
 ## Locations
 Routes 		= require './routes'
-Models		= require './models'
+Db 			= require './db'
 
+Models 		= require './models'
 
 ## Front-end
 dust		= require 'dustjs-linkedin'
 cons 		= require 'consolidate'
 sass		= require 'node-sass'
-
-## Database
-mongo		= require 'mongodb'
-mongoose	= require 'mongoose'
-Grid		= require 'gridfs-stream'
-
-mongoose.connect 'mongodb://127.0.0.1/test'
-db 			= mongoose.connection
-
 
 ## Input/Output
 bodyParser 	= require('connect-multiparty').bodyParser;
@@ -46,16 +38,14 @@ app.use sass.middleware {			# Compile sass from /source to /public
 }
 
 ## Utilities
-app.use bodyParser()				# This is multiparty's bodyParser
+app.use express.bodyParser()				# This is multiparty's bodyParser
 app.use app.router
 app.use express.errorHandler()
 
 
 app.get '/', 				Routes.index
-app.post '/', 				Routes.upload
-
-
-
+app.post '/',				Routes.upload
+app.post '/:bubblid',		Routes.addToBubbl
 
 
 
@@ -63,6 +53,7 @@ app.post '/', 				Routes.upload
 ##################### Start server #####################
 ########################################################
 
+Db.connect 'mongodb://127.0.0.1/test'
 app.listen 3000
 console.log 'SUCCESS: Express listening on 3000'.green
 console.log 'INFO:    Good luck!'.cyan

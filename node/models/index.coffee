@@ -1,2 +1,6 @@
-module.exports = 
-	file = require ('./File')
+
+
+module.exports =
+	File: require './File'
+	Bubbl: require './Bubbl'
+	Link: require './Link'

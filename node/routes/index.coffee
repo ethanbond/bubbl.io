@@ -1,13 +1,22 @@
 Db			= require '../db'
-Grid		= require 'gridfs-stream'
+GridStream	= require('GridFS').GridStream
 mongoose	= require 'mongoose'
 Models 		= require '../models'
+fs 			= require 'fs'
+
+parted 		= require 'parted'
+multipart 	= parted.multipart
+
 Bubbl 		= Models.Bubbl
 File 		= Models.File
 Link 		= Models.Link
 
-fs 			= require 'fs'
 
+
+
+getExt = (filename) ->
+	filename = filename.split '.'
+	return filename[filename.length-1]
 
 module.exports =
 	index:		(req, res) ->
@@ -18,23 +27,36 @@ module.exports =
 		bubbl = new Bubbl.model
 		bubbl.genLink()
 		console.log 'SUCCESS: New bubbl generated'.green
-
-
 		bubbl.save (err, bubbl) ->
 			if err
 				console.log 'FAILURE: Could not save new bubbl to MongoDB'.red
 				return
-			for key, value of req.files
-				file = new File.model
-				file.save (err, file) ->
-					gfs = Grid Db.connection, mongoose.mongo
-					writestream = gfs.createWriteStream {
-						_id: file._id
-					}
-					writestream.on 'open', () ->
-						readstream = fs.createReadStream value.toString()
-						readstream.on 'open', () ->
-							readstream.pipe writestream
-					writestream.on 'close', (file) ->
-						console.log 'writestream closed'
-						bubbl.addFile file
+
+			options = 
+				limit: 30 * 1024
+				diskLimit: 30 * 1024 * 1024
+
+			parser = new multipart req.headers['content-type'], options
+			parts = {}
+
+			parser.on 'error', (err) ->
+				req.destroy()
+				console.log err.red
+				next err
+
+			parser.on 'part', (field, part) ->
+				console.log 'INFO:  New part'.cyan
+				parts[field] = part
+
+			parser.on 'data', () ->
+				console.log 'INFO:  New data block'.cyan
+				console.log this.written
+
+			parser.on 'end', () ->
+				console.log parts
+				console.log 'SUCCESS: Multipart form parsed'.green
+
+			writeStream = GridStream.createGridWriteStream 'test', bubbl._id, 'w'
+			writeStream.write req.pipe(parser)
+			writeStream.end()
+

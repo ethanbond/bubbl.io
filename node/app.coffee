@@ -2,7 +2,6 @@
 ## Server
 express 	= require 'express'
 app 		= express()
-parted 		= require 'parted'
 
 ## Utilities
 colors		= require 'colors'
@@ -36,12 +35,6 @@ app.use sass.middleware {			# Compile sass from /source to /public
 }
 
 ## Utilities
-app.use parted {
-	path: __dirname + '/storage'
-	limit: 30 * 1024
-	diskLimit: 30 * 1024 * 1024
-	stream: true
-}
 app.use app.router
 app.use express.errorHandler()
 

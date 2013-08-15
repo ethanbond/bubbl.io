@@ -20,6 +20,8 @@
     "node-sass": "~0.6.4",
     "gridfs-stream": "~0.4.0",
     "connect-multiparty": "~0.1.1",
-    "chance": "~0.4.3"
+    "chance": "~0.4.3",
+    "formidable": "~1.0.14",
+    "parted": "~0.1.1"
   }
 }

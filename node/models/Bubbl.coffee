@@ -16,7 +16,11 @@ bubblSchema.methods =
 		console.log "URLS:    ".cyan, this.urls
 		console.log "FILES:   ".cyan, this.files
 	addFile: (file) ->
+		console.log 'adding file', file
 		this.files.push file
+		this.update {
+			$set: 'files': this.files
+		}
 	genLink: ->
 		this.urls.push new Link.model
 		id = this._id

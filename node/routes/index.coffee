@@ -22,8 +22,9 @@ parseName = (filename) ->
 module.exports =
 	index:		(req, res) ->
 		res.render "index"
-	addToBubbl: (req, res) ->
-		res.render "index"
+	viewBubbl: (req, res) ->
+		res.render "index",
+			id: req.params.bubblid
 	upload: 	(req, res) ->
 		bubbl = new Bubbl.model
 		bubbl.genLink()
@@ -43,6 +44,9 @@ module.exports =
 				console.log err.red
 				next err
 
+			parser.on 'data', () ->
+				console.log this.written
+
 			parser.on 'part', (field, part) ->
 				console.log 'INFO:  New part'.cyan
 				parsedName = parseName part
@@ -58,12 +62,12 @@ module.exports =
 				writeStream.write part
 				writeStream.end()
 				bubbl.addFile id
+				if part then fs.unlink part, (err) ->
+					if err then throw err
 				parts[field] = part
 
 			parser.on 'end', () ->
 				console.log 'SUCCESS: Multipart form parsed'.green
-				fs.unlink parts.upload, (err) ->
-					if err then throw err
-				res.render 'index'
+				res.redirect('/'+bubbl.getLast())
 
 			req.pipe(parser)

@@ -15,7 +15,10 @@ bubblSchema.methods =
 		console.log "ID:      ".cyan, this._id		
 		console.log "URLS:    ".cyan, this.urls
 		console.log "FILES:   ".cyan, this.files
+	getLast: () ->
+		return this.urls[this.urls.length-1]
 	addUrl: (url) ->
+		this.urls.push url
 		this.update(
 			$push:
 				urls: url
@@ -24,8 +27,7 @@ bubblSchema.methods =
 				if err
 					console.log err
 				else 
-					console.log url
-
+					console.log 'SUCCESS: Added url'.green, url.green, 'to bubbl'.green
 		)
 	addFile: (file) ->
 		this.update(
@@ -37,7 +39,14 @@ bubblSchema.methods =
 		)
 	genLink: ->
 		link = new Link.model
-		console.log this.url
+		bubbl = this
+		id = bubbl._id
+		link.genUrl()
+		link.save (err, link) ->
+			if err then console.log 'FAILURE: Could not save new link to MongoDB'.red
+			link.assign id, (e, response) ->
+				if e then console.log 'FAILURE: Could not assign bubbl to link'.red
+				bubbl.addUrl response
 
 	checkExpiration: (res) ->
 		if this.urls.length is 1

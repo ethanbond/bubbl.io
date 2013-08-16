@@ -8,12 +8,14 @@
 	<p>Drag, drop, share. Each link lasts for 7 days of inactivity, but you can create as many as you want.</p>
 </section>
 
+<h1> {id} </h1>
+
 <section class="filebox">
 	<form action="/" enctype="multipart/form-data" method="post">
 		<input type="file" name="upload" multiple="multiple">
 		<input type="submit" value="Upload">
 	</form>
-	
+
 	{altDebug}
 	
 	{#debug}

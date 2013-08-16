@@ -1,23 +1,28 @@
 mongoose 	= require 'mongoose'
 Chance		= require 'chance'
-chance 		= new Chance
 
 Bubbl 		= require './Bubbl'
 
+ObjectID 	= mongoose.Types.ObjectId
+
 
 one_week 	= (7 * 24 * 60 * 60)
-randomUrl	= () -> return chance.string {length: 7, pool: 'ahijkoqruwx'}
+
+randomUrl	= () -> 
+	chance = new Chance () ->
+		return Math.random()
+	return chance.string {length: 7, pool: 'ahijkoqruwx'}
 
 
 
 linkSchema = new mongoose.Schema {
 	url:
 		type: String
-		default: randomUrl()
+		default: null
 	expiration:
 		type: Date
 		default: Date.now() + one_week
-	bubbl: String
+	bubbl: [ObjectID]
 }
 
 
@@ -26,9 +31,20 @@ linkSchema.methods =
 		console.log "URL:        ", this.url
 		console.log "EXPIRATION: ", this.expiration
 		console.log "BUBBL:      ", this.bubbl
+	genUrl: ->
+		rand = randomUrl()
+		this.url = rand
+		this.update(
+			$set:
+				url: rand
+			(err) ->
+				if err then console.log err	
+				return rand
+		)
 	getString: () ->
 		return this.url
-	assign: (id, callback) ->
+	assign: (id, e) ->
+		url = this.url
 		this.update(
 			$push:
 				bubbl: id
@@ -36,8 +52,9 @@ linkSchema.methods =
 			(err) ->
 				if err
 					console.log err
-					callback err
-				callback false
+					e true, err
+				else
+					e false, url
 		)
 	checkExpiration: (req, res) ->
 		if Date.now.getTime > this.expiration.getTime

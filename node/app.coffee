@@ -42,7 +42,7 @@ app.use express.errorHandler()
 
 app.get  '/', 				Routes.index
 app.post '/',		  		Routes.upload
-app.get  '/:bubblid',		Routes.addToBubbl
+app.get  '/:bubblid',		Routes.viewBubbl
 
 
 

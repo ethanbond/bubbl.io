@@ -36,31 +36,8 @@ bubblSchema.methods =
 				if err then console.log err
 		)
 	genLink: ->
-		url = new Link.model
-		id = this._id.toString()
-		saveUrl = (url) ->
-			console.log url
-			url.save (err, url) ->
-				if err
-					console.log 'error'.red
-				else
-					url.assign id, (err) ->
-						if err
-							console.log err
-							return false
-						else
-							console.log 'ya'
-							return url.getString()
-
-		if saveUrl url is not false
-			console.log 'here'
-			this.update(
-				$pushAll:
-					urls: [url]
-				upsert: true
-				(err) ->
-					if err then console.log err
-			)
+		link = new Link.model
+		console.log this.url
 
 	checkExpiration: (res) ->
 		if this.urls.length is 1

@@ -2,6 +2,8 @@
 ## Server
 express 	= require 'express'
 app 		= express()
+server 		= require('http').createServer app
+io 			= require('socket.io').listen server
 
 ## Utilities
 colors		= require 'colors'
@@ -38,10 +40,9 @@ app.use sass.middleware {			# Compile sass from /source to /public
 app.use app.router
 app.use express.errorHandler()
 
-
-app.get '/', 				Routes.index
-app.post '/upload',  		Routes.upload,		Routes.index
-app.post '/:bubblid',		Routes.addToBubbl
+app.get  '/', 				Routes.index
+app.post '/',		  		Routes.upload
+app.get  '/:bubblid',		Routes.addToBubbl
 
 
 
@@ -50,6 +51,6 @@ app.post '/:bubblid',		Routes.addToBubbl
 ########################################################
 
 Db.connect 'mongodb://127.0.0.1/test'
-app.listen 3000
+server.listen 3000
 console.log 'SUCCESS: Express listening on 3000'.green
 console.log 'INFO:    Good luck!'.cyan

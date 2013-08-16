@@ -15,20 +15,53 @@ bubblSchema.methods =
 		console.log "ID:      ".cyan, this._id		
 		console.log "URLS:    ".cyan, this.urls
 		console.log "FILES:   ".cyan, this.files
+	addUrl: (url) ->
+		this.update(
+			$push:
+				urls: url
+			upsert: true
+			(err) ->
+				if err
+					console.log err
+				else 
+					console.log url
+
+		)
 	addFile: (file) ->
-		console.log 'adding file', file
-		this.files.push file
-		this.update {
-			$set: 'files': this.files
-		}
+		this.update(
+			$pushAll:
+				files: [file]
+			upsert: true
+			(err) ->
+				if err then console.log err
+		)
 	genLink: ->
-		this.urls.push new Link.model
-		id = this._id
-		last = this.urls[this.urls.length - 1]
-		last.assign id, (err) ->
-			if err then return
-			return last.getString()
-		return
+		url = new Link.model
+		id = this._id.toString()
+		saveUrl = (url) ->
+			console.log url
+			url.save (err, url) ->
+				if err
+					console.log 'error'.red
+				else
+					url.assign id, (err) ->
+						if err
+							console.log err
+							return false
+						else
+							console.log 'ya'
+							return url.getString()
+
+		if saveUrl url is not false
+			console.log 'here'
+			this.update(
+				$pushAll:
+					urls: [url]
+				upsert: true
+				(err) ->
+					if err then console.log err
+			)
+
 	checkExpiration: (res) ->
 		if this.urls.length is 1
 			# bubbl is no longer good

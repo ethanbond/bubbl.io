@@ -11,26 +11,25 @@ Bubbl 		= Models.Bubbl
 File 		= Models.File
 Link 		= Models.Link
 
-
-
-
-getExt = (filename) ->
+parseName = (filename) ->
 	filename = filename.split '.'
-	return filename[filename.length-1]
+	filename[0] = filename[0][5..filename[0].length]
+	ext = filename[filename.length-1]
+	filename = filename.splice 0, filename.length-2
+	filename = filename.join '.'
+	return [filename, ext]
 
 module.exports =
 	index:		(req, res) ->
 		res.render "index"
 	addToBubbl: (req, res) ->
 		res.render "index"
-	upload: 	(req, res, next) ->
+	upload: 	(req, res) ->
 		bubbl = new Bubbl.model
 		bubbl.genLink()
 		console.log 'SUCCESS: New bubbl generated'.green
 		bubbl.save (err, bubbl) ->
-			if err
-				console.log 'FAILURE: Could not save new bubbl to MongoDB'.red
-				return
+			if err then console.log 'FAILURE: Could not save new bubbl to MongoDB'.red
 
 			options = 
 				limit: 30 * 1024
@@ -46,17 +45,25 @@ module.exports =
 
 			parser.on 'part', (field, part) ->
 				console.log 'INFO:  New part'.cyan
+				parsedName = parseName part
+				ObjectId = mongoose.Types.ObjectId
+				id = new ObjectId
+				options = 
+					_id: id
+					metadata:
+						filename: parsedName[0]
+						extension: parsedName[1]
+						expiration: Date.now() + (7 * 24 * 60 * 60)
+				writeStream = GridStream.createGridWriteStream 'test', parsedName[0], 'w', options
+				writeStream.write part
+				writeStream.end()
+				bubbl.addFile id
 				parts[field] = part
 
-			parser.on 'data', () ->
-				console.log 'INFO:  New data block'.cyan
-				console.log this.written
-
 			parser.on 'end', () ->
-				console.log parts
 				console.log 'SUCCESS: Multipart form parsed'.green
+				fs.unlink parts.upload, (err) ->
+					if err then throw err
+				res.render 'index'
 
-			writeStream = GridStream.createGridWriteStream 'test', bubbl._id, 'w'
-			writeStream.write req.pipe(parser)
-			writeStream.end()
-
+			req.pipe(parser)

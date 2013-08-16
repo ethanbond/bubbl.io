@@ -26,11 +26,19 @@ linkSchema.methods =
 		console.log "URL:        ", this.url
 		console.log "EXPIRATION: ", this.expiration
 		console.log "BUBBL:      ", this.bubbl
-	getString: ->
+	getString: () ->
 		return this.url
 	assign: (id, callback) ->
-		this.bubbl = id
-		callback false
+		this.update(
+			$push:
+				bubbl: id
+			upsert: true
+			(err) ->
+				if err
+					console.log err
+					callback err
+				callback false
+		)
 	checkExpiration: (req, res) ->
 		if Date.now.getTime > this.expiration.getTime
 			bubbl.checkExpiration

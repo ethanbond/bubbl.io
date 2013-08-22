@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>{metadata.title}</title>
+		<title>{metadata.title|s}</title>
 		<meta name="description" content="{metadata.description}" />
 		<meta name="author" content="{metadata.author}" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

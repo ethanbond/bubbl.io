@@ -11,6 +11,7 @@ Bubbl 		= Models.Bubbl
 File 		= Models.File
 Link 		= Models.Link
 
+
 parseName = (filename) ->
 	filename = filename.split '.'
 	filename[0] = filename[0][5..filename[0].length]
@@ -19,12 +20,37 @@ parseName = (filename) ->
 	filename = filename.join '.'
 	return [filename, ext]
 
+
+fetchFiles = (url, callback) ->
+	query = Bubbl.model
+	query.findOne 'urls': $in: {url}, (err, bubbl) ->
+		if err then callback true, null
+		callback false, bubbl
+
+populate = (fileIds) ->
+	for id in fileIds
+		query = File.model
+		console.log id
+		query.findById id, (err, files) ->
+			if err then console.log err
+			console.log files
+
+		
 module.exports =
 	index:		(req, res) ->
 		res.render "index"
 	viewBubbl: (req, res) ->
-		res.render "index",
-			id: req.params.bubblid
+		fetchFiles req.params.bubblid, (err, bubbl) ->
+			if err then console.log 'FAILURE: Could not fetch bubbl', req.params.bubblid
+			files = populate bubbl.files 
+			res.render "index",
+				metadata:
+					title: '&ordm; '+req.params.bubblid
+				bubbl:
+					id: req.params.bubblid
+				alert: "FETCHING FILES"
+				files: files
+
 	upload: 	(req, res) ->
 		bubbl = new Bubbl.model
 		bubbl.genLink()
@@ -44,30 +70,32 @@ module.exports =
 				console.log err.red
 				next err
 
-			parser.on 'data', () ->
-				console.log this.written
-
 			parser.on 'part', (field, part) ->
 				console.log 'INFO:  New part'.cyan
 				parsedName = parseName part
 				ObjectId = mongoose.Types.ObjectId
 				id = new ObjectId
+				console.log 'id: ', id.toString()
+				id = id.toString()
+				file = new File.model
 				options = 
 					_id: id
+					root: 'files'
 					metadata:
 						filename: parsedName[0]
 						extension: parsedName[1]
 						expiration: Date.now() + (7 * 24 * 60 * 60)
+				console.log 'id: ', id
 				writeStream = GridStream.createGridWriteStream 'test', parsedName[0], 'w', options
 				writeStream.write part
 				writeStream.end()
 				bubbl.addFile id
-				if part then fs.unlink part, (err) ->
+				fs.unlink part, (err) ->
 					if err then throw err
 				parts[field] = part
 
 			parser.on 'end', () ->
 				console.log 'SUCCESS: Multipart form parsed'.green
-				res.redirect('/'+bubbl.getLast())
+				res.redirect('/b'+bubbl.getLast())
 
 			req.pipe(parser)

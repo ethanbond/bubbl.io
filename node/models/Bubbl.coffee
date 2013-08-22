@@ -15,6 +15,11 @@ bubblSchema.methods =
 		console.log "ID:      ".cyan, this._id		
 		console.log "URLS:    ".cyan, this.urls
 		console.log "FILES:   ".cyan, this.files
+	fetch: (url) ->
+		query = this.find(
+			urls: { $in: url }
+		)
+
 	getLast: () ->
 		return this.urls[this.urls.length-1]
 	addUrl: (url) ->

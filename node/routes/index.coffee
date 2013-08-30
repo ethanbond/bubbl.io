@@ -11,6 +11,7 @@ Bubbl 		= Models.Bubbl
 File 		= Models.File
 Link 		= Models.Link
 
+GridStore 	= mongoose.mongo.GridStore
 
 parseName = (filename) ->
 	filename = filename.split '.'
@@ -74,18 +75,13 @@ module.exports =
 				console.log 'INFO:  New part'.cyan
 				parsedName = parseName part
 				ObjectId = mongoose.Types.ObjectId
-				id = new ObjectId
-				console.log 'id: ', id.toString()
-				id = id.toString()
-				file = new File.model
 				options = 
-					_id: id
+					_id: id = new ObjectId
 					root: 'files'
 					metadata:
 						filename: parsedName[0]
 						extension: parsedName[1]
 						expiration: Date.now() + (7 * 24 * 60 * 60)
-				console.log 'id: ', id
 				writeStream = GridStream.createGridWriteStream 'test', parsedName[0], 'w', options
 				writeStream.write part
 				writeStream.end()

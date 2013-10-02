@@ -3,6 +3,7 @@ GridStream	= require('GridFS').GridStream
 mongoose	= require 'mongoose'
 Models 		= require '../models'
 fs 			= require 'fs'
+ObjectId = mongoose.Types.ObjectId
 
 parted 		= require 'parted'
 multipart 	= parted.multipart
@@ -29,12 +30,22 @@ fetchFiles = (url, callback) ->
 		callback false, bubbl
 
 populate = (fileIds) ->
+	files = []
 	for id in fileIds
-		query = File.model
-		console.log id
-		query.findById id, (err, files) ->
-			if err then console.log err
-			console.log files
+		options =
+			root: 'files'
+		id = id.toString()
+		readStream = GridStream.createGridReadStream 'test', new ObjectId(id), options
+		console.log readStream
+		for k, v of readStream
+			console.log k
+
+		console.log readStream.db
+		console.log readStream.filename
+		console.log readStream.gridStore
+		files.push readStream.filename
+		console.log '------------'
+	return files
 
 		
 module.exports =
@@ -46,7 +57,7 @@ module.exports =
 			files = populate bubbl.files 
 			res.render "index",
 				metadata:
-					title: '&ordm; '+req.params.bubblid
+					title: '&ordm; b'+req.params.bubblid
 				bubbl:
 					id: req.params.bubblid
 				alert: "FETCHING FILES"
@@ -74,7 +85,6 @@ module.exports =
 			parser.on 'part', (field, part) ->
 				console.log 'INFO:  New part'.cyan
 				parsedName = parseName part
-				ObjectId = mongoose.Types.ObjectId
 				options = 
 					_id: id = new ObjectId
 					root: 'files'
